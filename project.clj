@@ -6,5 +6,5 @@
   :dependencies [[openjdk/tools "7"]]
   :java-source-paths ["src-java"]
 
-  :manifest {"Agent-Class" "carbonite.BytecodeVault"
+  :manifest {"Agent-Class" "carbonite.SeerAgent"
              "Can-Retransform-Classes" "true"})
