@@ -1,0 +1,179 @@
+{
+    "beaker": "2",
+    "evaluators": [
+        {
+            "name": "Html",
+            "plugin": "Html",
+            "view": {
+                "cm": {
+                    "mode": "htmlmixed"
+                }
+            }
+        },
+        {
+            "name": "Latex",
+            "plugin": "Latex",
+            "view": {
+                "cm": {
+                    "mode": "stex"
+                }
+            }
+        },
+        {
+            "name": "JavaScript",
+            "plugin": "JavaScript",
+            "jsSetting2": "",
+            "jsSetting1": "",
+            "view": {
+                "cm": {
+                    "mode": "javascript",
+                    "background": "#FFE0F0"
+                }
+            }
+        },
+        {
+            "name": "Groovy",
+            "plugin": "Groovy",
+            "imports": "com.twosigma.beaker.chart.Color\ncom.twosigma.beaker.chart.xychart.*\ncom.twosigma.beaker.chart.xychart.plotitem.*",
+            "view": {
+                "cm": {
+                    "mode": "groovy"
+                }
+            },
+            "classPath": "/usr/lib/jvm/java-7-openjdk/lib/tools.jar\n/home/mfarrell/workspace/carbonite/target/carbonite-0.1.0-SNAPSHOT-standalone.jar"
+        }
+    ],
+    "cells": [
+        {
+            "id": "codeN56VVd",
+            "type": "code",
+            "evaluator": "Groovy",
+            "input": {
+                "body": [
+                    "import carbonite.SeerAgent",
+                    "",
+                    "SeerAgent.load()"
+                ]
+            },
+            "output": {
+                "state": {},
+                "selectedType": "Text",
+                "elapsedTime": 38,
+                "result": "null"
+            },
+            "evaluatorReader": true,
+            "lineCount": 3,
+            "initialization": true
+        },
+        {
+            "id": "codeHpvCt3",
+            "type": "code",
+            "evaluator": "Groovy",
+            "input": {
+                "body": [
+                    "import carbonite.BytecodeSeer",
+                    "",
+                    "def foo = {it}",
+                    "BytecodeSeer.getInstance().getBytecode(foo.class)"
+                ]
+            },
+            "output": {
+                "state": {},
+                "selectedType": "BeakerDisplay",
+                "elapsedTime": 106
+            },
+            "evaluatorReader": true,
+            "lineCount": 4
+        },
+        {
+            "id": "codeXRM4HV",
+            "type": "code",
+            "evaluator": "Groovy",
+            "input": {
+                "body": [
+                    "import carbonite.BytecodeSeer",
+                    "",
+                    "carboniteData = {",
+                    "  [name: it.class.name,",
+                    "   bytecode: BytecodeSeer.getInstance().getBytecode(it.class)",
+                    "  ]",
+                    "}",
+                    "",
+                    "writeClosure = {os, f->",
+                    "  os << carboniteData(f)",
+                    "  os << f.dehydrate()",
+                    "}",
+                    "",
+                    "readClosure = {is, cl->",
+                    "  def data = is.readObject()",
+                    "  cl.data = data",
+                    "  is.readObject()",
+                    "}"
+                ]
+            },
+            "output": {
+                "state": {},
+                "result": "Script10$_run_closure3@35d461f0",
+                "selectedType": "Text",
+                "elapsedTime": 83
+            },
+            "evaluatorReader": true,
+            "lineCount": 18
+        },
+        {
+            "id": "coderIfMox",
+            "type": "code",
+            "evaluator": "Groovy",
+            "input": {
+                "body": [
+                    "def foo = {it}",
+                    "",
+                    "File objectStore = new File('objectStore.ser')",
+                    "if (objectStore.exists()) { objectStore.delete() }",
+                    "",
+                    "objectStore.withObjectOutputStream {os->",
+                    "  // os << carboniteData(foo)",
+                    "  // os << foo.dehydrate()",
+                    "  writeClosure(os, foo)",
+                    "}"
+                ]
+            },
+            "output": {
+                "state": {},
+                "result": "null",
+                "selectedType": "Text",
+                "elapsedTime": 59
+            },
+            "evaluatorReader": true,
+            "lineCount": 10
+        },
+        {
+            "id": "codenKqMbL",
+            "type": "code",
+            "evaluator": "Groovy",
+            "input": {
+                "body": [
+                    "import carbonite.CarboniteClassLoader",
+                    "",
+                    "File objectStore = new File('objectStore.ser')",
+                    "def cl = new CarboniteClassLoader(this.class.classLoader)",
+                    "",
+                    "objectStore.withObjectInputStream(cl) {is->",
+                    "  // def data = is.readObject()",
+                    "  // cl.data = data",
+                    "  // def foo = is.readObject()",
+                    "  def foo = readClosure(is, cl)",
+                    "}"
+                ]
+            },
+            "output": {
+                "state": {},
+                "result": "Script11$_run_closure1@756dccf3",
+                "selectedType": "Text",
+                "elapsedTime": 41
+            },
+            "evaluatorReader": true,
+            "lineCount": 11
+        }
+    ]
+}
