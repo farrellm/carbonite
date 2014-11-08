@@ -3,21 +3,24 @@ package carbonite;
 import java.util.Map;
 
 class CarboniteClassLoader extends ClassLoader {
-    Map<Object, Object> _cd;
+    public CarboniteData _cd;
   
     CarboniteClassLoader(ClassLoader cl) {
 	super(cl);
     }
   
-    void setData(Map<Object, Object> cd) {
+    void setData(CarboniteData cd) {
 	_cd = cd;
     }
   
     @Override
     protected Class findClass(String name) throws ClassNotFoundException {
-	if (_cd != null && name.equals(_cd.get("name"))) {
-	    byte[] bytecode = (byte[])_cd.get("bytecode");
-	    return defineClass(name, bytecode, 0, bytecode.length);
+	if (_cd != null && name.equals(_cd.name)) {
+	    try {
+		return defineClass(name, _cd.bytecode, 0, _cd.bytecode.length);
+	    } finally {
+		_cd = null;
+	    }
 	} else {
 	    return super.findClass(name);
 	}
