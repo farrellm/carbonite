@@ -34,7 +34,7 @@
         {
             "name": "Groovy",
             "plugin": "Groovy",
-            "imports": "com.twosigma.beaker.chart.Color\ncom.twosigma.beaker.chart.xychart.*\ncom.twosigma.beaker.chart.xychart.plotitem.*",
+            "imports": "com.twosigma.beaker.chart.Color\ncom.twosigma.beaker.chart.xychart.*\ncom.twosigma.beaker.chart.xychart.plotitem.*\ncom.twosigma.beaker.NamespaceClient\ncom.twosigma.beaker.BeakerProgressUpdate",
             "view": {
                 "cm": {
                     "mode": "groovy"
@@ -45,107 +45,36 @@
     ],
     "cells": [
         {
-            "id": "codeN56VVd",
-            "type": "code",
-            "evaluator": "Groovy",
-            "input": {
-                "body": [
-                    "import carbonite.SeerAgent",
-                    "",
-                    "SeerAgent.load()"
-                ]
-            },
-            "output": {
-                "state": {},
-                "selectedType": "Text",
-                "elapsedTime": 38,
-                "result": "null"
-            },
-            "evaluatorReader": true,
-            "lineCount": 3,
-            "initialization": true
-        },
-        {
-            "id": "codeHpvCt3",
-            "type": "code",
-            "evaluator": "Groovy",
-            "input": {
-                "body": [
-                    "import carbonite.BytecodeSeer",
-                    "",
-                    "def foo = {it}",
-                    "BytecodeSeer.getInstance().getBytecode(foo.class)"
-                ]
-            },
-            "output": {
-                "state": {},
-                "selectedType": "BeakerDisplay",
-                "elapsedTime": 106
-            },
-            "evaluatorReader": true,
-            "lineCount": 4
-        },
-        {
-            "id": "codeXRM4HV",
-            "type": "code",
-            "evaluator": "Groovy",
-            "input": {
-                "body": [
-                    "import carbonite.BytecodeSeer",
-                    "",
-                    "carboniteData = {",
-                    "  [name: it.class.name,",
-                    "   bytecode: BytecodeSeer.getInstance().getBytecode(it.class)",
-                    "  ]",
-                    "}",
-                    "",
-                    "writeClosure = {os, f->",
-                    "  os << carboniteData(f)",
-                    "  os << f.dehydrate()",
-                    "}",
-                    "",
-                    "readClosure = {is, cl->",
-                    "  def data = is.readObject()",
-                    "  cl.data = data",
-                    "  is.readObject()",
-                    "}"
-                ]
-            },
-            "output": {
-                "state": {},
-                "result": "Script10$_run_closure3@35d461f0",
-                "selectedType": "Text",
-                "elapsedTime": 83
-            },
-            "evaluatorReader": true,
-            "lineCount": 18
-        },
-        {
             "id": "coderIfMox",
             "type": "code",
             "evaluator": "Groovy",
             "input": {
                 "body": [
-                    "def foo = {it}",
+                    "import carbonite.CarboniteWriter",
+                    "",
+                    "def foo = {it + it}",
                     "",
                     "File objectStore = new File('objectStore.ser')",
                     "if (objectStore.exists()) { objectStore.delete() }",
                     "",
                     "objectStore.withObjectOutputStream {os->",
-                    "  // os << carboniteData(foo)",
-                    "  // os << foo.dehydrate()",
-                    "  writeClosure(os, foo)",
-                    "}"
+                    "  def co = new CarboniteWriter(os)",
+                    "",
+                    "  co.writeObject(foo.dehydrate())",
+                    "}",
+                    "",
+                    "carbonite.BytecodeSeer.getInstance().getBytecode(foo.class)"
                 ]
             },
             "output": {
                 "state": {},
-                "result": "null",
                 "selectedType": "Text",
-                "elapsedTime": 59
+                "elapsedTime": 574,
+                "pluginName": "Groovy",
+                "shellId": "1836b25a-fb9e-4d52-bc1a-73e558ab0946"
             },
             "evaluatorReader": true,
-            "lineCount": 10
+            "lineCount": 14
         },
         {
             "id": "codenKqMbL",
@@ -154,23 +83,24 @@
             "input": {
                 "body": [
                     "import carbonite.CarboniteClassLoader",
+                    "import carbonite.CarboniteReader",
                     "",
                     "File objectStore = new File('objectStore.ser')",
                     "def cl = new CarboniteClassLoader(this.class.classLoader)",
                     "",
                     "objectStore.withObjectInputStream(cl) {is->",
-                    "  // def data = is.readObject()",
-                    "  // cl.data = data",
-                    "  // def foo = is.readObject()",
-                    "  def foo = readClosure(is, cl)",
+                    "  def ci = new CarboniteReader(is, cl)",
+                    "",
+                    "  ci.readObject()(8)",
                     "}"
                 ]
             },
             "output": {
                 "state": {},
-                "result": "Script11$_run_closure1@756dccf3",
-                "selectedType": "Text",
-                "elapsedTime": 41
+                "selectedType": "BeakerDisplay",
+                "elapsedTime": 1429,
+                "pluginName": "Groovy",
+                "shellId": "18802b5e-40da-436b-b65a-129b270c4c31"
             },
             "evaluatorReader": true,
             "lineCount": 11
