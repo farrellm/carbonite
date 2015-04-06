@@ -1,27 +1,30 @@
 package carbonite;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-class CarboniteReader  {
+class CarboniteReader implements Closeable {
     private final ObjectInputStream _in;
     private final CarboniteClassLoader _cl;
-    
-    private CarboniteData _data;
-    
+
     public CarboniteReader(ObjectInputStream in, CarboniteClassLoader cl) {
         _in = in;
-	_cl = cl;
+        _cl = cl;
     }
 
     public Object readObject() throws IOException, ClassNotFoundException {
-	Object obj = _in.readObject();
+        Object obj = _in.readObject();
 
-	if (obj instanceof CarboniteData) {
-	    _cl.setData((CarboniteData)obj);
+        if (obj instanceof CarboniteData) {
+            _cl.setData((CarboniteData)obj);
             return _in.readObject();
-	} else {
-	    return obj;
-	}
+        } else {
+            return obj;
+        }
+    }
+
+    public void close() throws IOException {
+	_in.close();
     }
 }

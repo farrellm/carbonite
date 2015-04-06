@@ -7,18 +7,21 @@ public class SeerTransformer implements ClassFileTransformer {
     private byte[] _bytecode = null;
 
     public byte[] getBytecode() {
-	return _bytecode;
+        if (_bytecode == null)
+            throw new RuntimeException("Bytecode not set");
+
+        return _bytecode;
     }
 
     public byte[] transform(ClassLoader loader, String className,
-			    Class<?> classBeingRedefined,
-			    ProtectionDomain protectionDomain,
-			    byte[] classfileBuffer)
+                            Class<?> classBeingRedefined,
+                            ProtectionDomain protectionDomain,
+                            byte[] classfileBuffer)
     {
-	if (_bytecode != null)
-	    throw new RuntimeException("Resetting bytecode");
+        if (_bytecode != null)
+            throw new RuntimeException("Resetting bytecode");
 
-	_bytecode = classfileBuffer;
-	return classfileBuffer;
+        _bytecode = classfileBuffer;
+        return classfileBuffer;
     }
 }

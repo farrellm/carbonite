@@ -7,46 +7,54 @@ import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.Map;
 
+import carbonite.SeerAgent;
+
 public class BytecodeSeer {
-    public static Instrumentation _instr;
-    public static void setInstrumentation(Instrumentation instr) {
-	_instr = instr;
+    // factory
+    private static final BytecodeSeer _theInstance;
+
+    static {
+        System.out.println("seer loaded");
+        _theInstance = new BytecodeSeer(SeerAgent.getInstrumentation());
     }
 
-    // factory
-    private static BytecodeSeer _theInstance = null;
-
-    public static synchronized BytecodeSeer getInstance() {
-	if (_theInstance == null)
-	    _theInstance = new BytecodeSeer();
-	return _theInstance;
+    /**
+     * Factory method
+     * @returns the Seer
+     */
+    public static BytecodeSeer getInstance() {
+        return _theInstance;
     }
 
     // instance
+    private final Instrumentation _instr;
     private final Map <Class, byte[]> _cache = new HashMap<>();
 
-    public synchronized byte[] getBytecode(Class c) {
-	if (!_cache.containsKey(c))
-            _cache.put(c, findBytecode(c));
-	return _cache.get(c);
+    private BytecodeSeer(Instrumentation instr) {
+        _instr = instr;
     }
 
-    public static byte[] findBytecode(Class c) {
-	if (_instr == null)
-	    throw new RuntimeException(
-                "Instrumentation not loaded. Please restart your JVM " +
-		"and call SeerAgent.load()");
+    /**
+     * Retrieve the bytecode for a class
+     * @param c target class
+     * @return bytecode
+     */
+    public synchronized byte[] getBytecode(Class c) {
+        if (!_cache.containsKey(c))
+            _cache.put(c, findBytecode(c));
+        return _cache.get(c);
+    }
 
-	SeerTransformer cft = new SeerTransformer();
-	try {
-	    _instr.addTransformer(cft, true);
-	    _instr.retransformClasses(c);
-	    return cft.getBytecode();
-	    // return null;
-	} catch (UnmodifiableClassException e) {
-	    throw new RuntimeException(e);
-	} finally {
-	    _instr.removeTransformer(cft);
-	}
+    private byte[] findBytecode(Class c) {
+        SeerTransformer cft = new SeerTransformer();
+        try {
+            _instr.addTransformer(cft, true);
+            _instr.retransformClasses(c);
+            return cft.getBytecode();
+        } catch (UnmodifiableClassException e) {
+            throw new RuntimeException(e);
+        } finally {
+            _instr.removeTransformer(cft);
+        }
     }
 }
