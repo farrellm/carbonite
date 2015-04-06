@@ -14,7 +14,6 @@ public class BytecodeSeer {
     private static final BytecodeSeer _theInstance;
 
     static {
-        System.out.println("seer loaded");
         _theInstance = new BytecodeSeer(SeerAgent.getInstrumentation());
     }
 

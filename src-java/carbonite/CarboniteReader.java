@@ -13,6 +13,10 @@ class CarboniteReader implements Closeable {
         _cl = cl;
     }
 
+    /**
+     * Read the next object, loading the class if necessary
+     * @return object
+     */
     public Object readObject() throws IOException, ClassNotFoundException {
         Object obj = _in.readObject();
 
@@ -24,6 +28,9 @@ class CarboniteReader implements Closeable {
         }
     }
 
+    /**
+     * Closable
+     */
     public void close() throws IOException {
 	_in.close();
     }
